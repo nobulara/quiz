@@ -15,10 +15,29 @@ exports.load = function(req, res, next, quizId) {
 };
 
 // GET /quizes
-exports.index = function(req, res) {
-	models.Quiz.findAll().then( function(quizes){
-		res.render('quizes/index.ejs', {quizes: quizes});
-	})
+exports.index = function(req, res) {	
+	//console.log('SEARCH:' + req.query.search);
+	
+	if(req.query.search !== undefined) { //si estamos buscando filtramos las preguntas		
+		//sustituir todas las agrupaciones en blanco por %
+		var search2 =  req.query.search.replace(/\s+/g, "%");
+		//si no empieza o termina la cadena por % se lo añadimos
+		if(search2.charAt(0)!='%') {
+			search2 = "%" + search2;
+		}
+		if(search2.charAt(search2.length-1)!='%') {
+			search2 = search2 + "%";
+		}
+		//console.log('SEARCH2:' + search2);
+		models.Quiz.findAll({where:["pregunta LIKE ?", search2],
+		                     order:[["pregunta", "ASC"]]}).then(function(quizes){
+			res.render('quizes/index', {quizes: quizes});	
+		});
+	} else { //sino, mostramos todas
+		models.Quiz.findAll().then( function(quizes){
+			res.render('quizes/index.ejs', {quizes: quizes});
+		})
+	}
 };
 
 // GET /quizes/:id
