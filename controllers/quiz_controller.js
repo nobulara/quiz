@@ -16,7 +16,7 @@ exports.load = function(req, res, next, quizId) {
 
 // GET /quizes
 exports.index = function(req, res) {	
-	//console.log('SEARCH:' + req.query.search);
+	// console.log('SEARCH:' + req.query.search);
 	
 	if(req.query.search !== undefined) { //si estamos buscando filtramos las preguntas		
 		//sustituir todas las agrupaciones en blanco por %
