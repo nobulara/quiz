@@ -82,3 +82,30 @@ exports.create = function(req, res) {
 		}
 	});		
 };
+
+// POST /quizes/:id/edit
+exports.edit = function(req, res) {
+	// autoload de instancia de quiz
+	var quiz = req.quiz;
+	
+	res.render('quizes/edit', {quiz: quiz, errors:[]});
+};
+
+// PUT /quizes/:id
+exports.update = function(req, res) {
+	// machaca el de la BD con el que ha introducido el usuario
+	req.quiz.pregunta = req.body.quiz.pregunta;
+	req.quiz.respuesta = req.body.quiz.respuesta;
+	
+	req.quiz.validate().then(function(err) {
+		if(err) {
+			res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
+		} else {
+			// guarda en BD los campos pregunta y respuesta de quiz
+			req.quiz.save({fields:["pregunta", "respuesta"]}).then(function(){
+				// redireccion HTTP (URL relativo) lista de preguntas
+				res.redirect('/quizes');
+			})
+		}
+	});		
+};
