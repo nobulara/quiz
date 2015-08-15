@@ -34,6 +34,10 @@ exports.create = function(req, res) {
 		// La sesion se define por la existencia de req.session.user
 		req.session.user = {id:user.id, username:user.username};
 		
+		// Crear variable para controlar el timeout de cierre de sesion por inactividad
+		req.session.ultimoAcceso = new Date().getTime();
+		//console.log("***Tiempo de Login a: "+req.session.ultimoAcceso);
+		
 		res.redirect(req.session.redir.toString());  // redireccion a path anterior a login	
 	});
 };

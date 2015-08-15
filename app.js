@@ -32,6 +32,27 @@ app.use(function(req, res, next){
 	// guardar path en session.redir para despues de login
 	if(!req.path.match(/\/login|\/logout/)){
 		req.session.redir = req.path;
+		//console.log("***dentro");
+		
+		// si esta logado comprobar si han pasado 2 minutos entre el tiempo actual y la ultima vez que se accedió		
+		// en cuyo caso realizamos un logout, sino actualizamos el tiempo del último acceso con el tiempo actual
+		// NOTA: es importa guardarlo en sesion en milisegundos porque si lo hacemos como objeto Date al serializarlo no lo realiza correctamente		
+		if(req.session.user) {
+			var tiempoActual = new Date();
+			//console.log("***tiempoActual: "+ tiempoActual);
+			//console.log("***ultimoAcceso: "+ new Date(req.session.ultimoAcceso));
+			var diferenciaTiempos = new Date(tiempoActual - new Date(req.session.ultimoAcceso));
+			//console.log("***Diferencia tiempos en minutos: "+ diferenciaTiempos.getMinutes());	
+			if(diferenciaTiempos.getMinutes() > 2) {
+				//console.log("***Timeout!");
+				res.redirect('/logout');
+				return;
+			} else {
+				req.session.ultimoAcceso = tiempoActual.getTime();
+				//console.log("***Actualizar ultimoAcceso: "+ req.session.ultimoAcceso);
+			}
+		}
+		
 	}
 	
 	// hacer visible req.session en las vistas
